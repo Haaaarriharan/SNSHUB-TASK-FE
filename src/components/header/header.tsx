@@ -1,7 +1,5 @@
-/********************************Import  Packages*************************************/
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "./ui/button";
-/********************************Import  Components*************************************/
+// COMPONENETS
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,22 +7,35 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-
-/********************************Import  Redux*************************************/
+} from "../ui/dropdown-menu";
+// REDUX
 import { clearEmployeeData } from "@/redux/EmployeeReducer";
 import { clearuserData } from "@/redux/userReducer";
 import { RootState } from "@/redux/store";
+import { Button } from "../ui/button";
 
 const Header = () => {
   const dispatch: any = useDispatch();
   const { data }: any = useSelector((state: RootState) => state.user);
 
   return (
-    <header className="bg-black text-white">
+    <header
+      className="bg-white text-black"
+      style={{
+        boxShadow:
+          "rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px",
+      }}
+    >
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-4">
-          <p className="text-lg font-bold">Dashboard</p>
+          <p
+            className="text-lg  font-medium"
+            style={{
+              fontFamily: `Poppins`,
+            }}
+          >
+            DASHBOARD
+          </p>
         </div>
         <div className="flex items-center gap-4">
           <DropdownMenu>
@@ -34,7 +45,7 @@ const Header = () => {
                 variant="ghost"
                 className=" hover:bg-black select-none"
               >
-                <img
+                {/* <img
                   alt="Avatar"
                   className="rounded-full"
                   height="32"
@@ -44,7 +55,7 @@ const Header = () => {
                     objectFit: "cover",
                   }}
                   width="32"
-                />
+                /> */}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

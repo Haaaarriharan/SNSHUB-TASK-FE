@@ -22,7 +22,7 @@ import * as yup from "yup";
 export default function SignUp() {
   const dispatch: any = useDispatch();
 
-  //validation schema
+  //VALIDATION SCHEMA
   const validationSchema = yup.object({
     name: yup.string().required("Name is required"),
     email: yup.string().email("Invalid email").required("Email is required"),
@@ -30,7 +30,7 @@ export default function SignUp() {
   });
 
   const formik = useFormik({
-    //initial values
+    //INITIAL VALUES
     initialValues: {
       name: "",
       email: "",

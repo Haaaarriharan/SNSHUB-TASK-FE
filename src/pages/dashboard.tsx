@@ -1,8 +1,6 @@
 /********************************Import Components*************************************/
-import { DatePicker } from "@/components/date-picker";
-import Footer from "@/components/footer";
-import Header from "@/components/header";
-import { DataTable } from "@/components/table";
+import { DatePicker } from "@/components/datepicker/date-picker";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -38,6 +36,9 @@ import Loading from "@/components/loader/loader";
 
 /********************************Import Toast*************************************/
 import { toast } from "sonner";
+import Header from "@/components/header/header";
+import { DataTable } from "@/components/table/table";
+import Footer from "@/components/footer/footer";
 
 const Dashboard = () => {
   const dispatch: any = useDispatch();
@@ -220,7 +221,14 @@ const Dashboard = () => {
       <Header />
       <div className="container overflow-scroll flex-grow no-scrollbar">
         <div className="flex justify-between items-center">
-          <p className="text-xl font-bold">List Of Employees</p>
+          <p
+            className="text-lg font-medium"
+            style={{
+              fontFamily: `Poppins`,
+            }}
+          >
+            LIST OF EMPLOYEES
+          </p>
           <Dialog open={openForm}>
             <DialogTrigger asChild>
               <Button

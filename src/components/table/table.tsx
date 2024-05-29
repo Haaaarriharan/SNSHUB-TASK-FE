@@ -67,20 +67,10 @@ export function DataTable({ data, columns }: DataTableProps) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter name..."
-          value={
-            (table.getColumn("employeeName")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("employeeName")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+      <div className="flex mb-3">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="">
               Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -104,8 +94,19 @@ export function DataTable({ data, columns }: DataTableProps) {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        <Input
+          placeholder="Filter name..."
+          value={
+            (table.getColumn("employeeName")?.getFilterValue() as string) ?? ""
+          }
+          onChange={(event) =>
+            table.getColumn("employeeName")?.setFilterValue(event.target.value)
+          }
+          className="w-[300px] ml-2"
+        />
       </div>
-      <div className="rounded-md border">
+
+      <div className="rounded-md border ">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

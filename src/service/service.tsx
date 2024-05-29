@@ -1,24 +1,20 @@
-/********************************Import  API URL*************************************/
-import { API_URL } from "@/config";
-
-/********************************Import  Packages*************************************/
-import axios from "axios";
+import apiInstance from "@/axios";
 
 const employeeAPI = {
-  //creating the employee
+  //CREATING THE EMPLOYEE
   createEmployee: async (payload: any) => {
     try {
-      const res = await axios.post(`${API_URL}/employee-create`, payload);
+      const res = await apiInstance.post(`/employee-create`, payload);
       return res;
     } catch (error) {
       throw error;
     }
   },
 
-  //listing the employee by userId
+  //LISTING THE EMPLOYEE BY USERID
   getEmployees: async (id: any) => {
     try {
-      const res = await axios.get(`${API_URL}/employee-list/${id}`);
+      const res = await apiInstance.get(`/employee-list/${id}`);
       return res;
     } catch (error) {
       throw error;
