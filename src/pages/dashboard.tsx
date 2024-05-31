@@ -1,6 +1,4 @@
-/********************************Import Components*************************************/
 import { DatePicker } from "@/components/datepicker/date-picker";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,26 +17,23 @@ import { EmployeeType } from "@/global";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-
-/********************************Import Redux*************************************/
+//REDUX
 import { useDispatch, useSelector } from "react-redux";
 import { setEmployee } from "../redux/EmployeeReducer";
 import { RootState } from "@/redux/store";
-
-/********************************Import Formik*************************************/
+// FORMIK
 import { useFormik } from "formik";
 import * as yup from "yup";
-
-/********************************Import Services*************************************/
+// SERVICE
 import moment from "moment";
 import employeeAPI from "@/service/service";
 import Loading from "@/components/loader/loader";
-
-/********************************Import Toast*************************************/
+// TOAST
 import { toast } from "sonner";
 import Header from "@/components/header/header";
 import { DataTable } from "@/components/table/table";
 import Footer from "@/components/footer/footer";
+import { useQuery } from "react-query";
 
 const Dashboard = () => {
   const dispatch: any = useDispatch();
@@ -49,7 +44,7 @@ const Dashboard = () => {
   const { data }: any = useSelector((state: RootState) => state.employee);
   const { data: User }: any = useSelector((state: RootState) => state.user);
 
-  //validation schema
+  //VALIDATION SCHEMA
   const validationSchema = yup.object({
     employeeName: yup.string().required("Name is required"),
     designation: yup.string().required("Designation is required"),
@@ -60,7 +55,7 @@ const Dashboard = () => {
 
   const formik = useFormik({
     enableReinitialize: true,
-    //initial Values
+    //INITIAL VALUES
     initialValues: {
       employeeName: "",
       designation: "",
@@ -69,7 +64,7 @@ const Dashboard = () => {
       address: "",
     },
     validationSchema: validationSchema,
-    //Submitting the form
+    //SUBMITTING THE FORM
     onSubmit: async (values) => {
       try {
         let payload: any = {
@@ -101,7 +96,7 @@ const Dashboard = () => {
     },
   });
 
-  //list employees based on UserId
+  //LIST EMPLOYEES BASED ON USERID
   const getEmployeesById = async () => {
     setLoading(true);
     try {
@@ -118,14 +113,29 @@ const Dashboard = () => {
     }
   };
 
-  //initial listing
+  const getEmployessByReactQuery = useQuery(
+    ["getEmployessByReactQuery"],
+    async () => {
+      return await employeeAPI.getEmployees(User?._id);
+    },
+    {
+      onSuccess: () => {},
+      onError: (err: any) => {
+        console.log(err.response?.data || err);
+      },
+    }
+  );
+
+  console.log("getEmployessByReactQuery", getEmployessByReactQuery);
+
+  //INITIAL LISTING
   useEffect(() => {
     if (data?.length !== 0) {
       getEmployeesById();
     }
   }, []);
 
-  //Table Data initialization
+  //TABLE DATA INITIALIZATION
   const EmployeeColumns: ColumnDef<EmployeeType>[] = [
     {
       accessorKey: "employeeName",
@@ -209,7 +219,7 @@ const Dashboard = () => {
     },
   ];
 
-  //Close Model function
+  //CLOSE MODEL FUNCTION
   const handleClose = () => {
     formik.resetForm();
     setOpenForm(false);
