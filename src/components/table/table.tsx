@@ -35,6 +35,7 @@ import {
 interface DataTableProps {
   data: Record<string, any>[];
   columns: ColumnDef<any>[];
+  setFilter: any;
 }
 export function DataTable({ data, columns }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -96,11 +97,9 @@ export function DataTable({ data, columns }: DataTableProps) {
         </DropdownMenu>
         <Input
           placeholder="Filter name..."
-          value={
-            (table.getColumn("employeeName")?.getFilterValue() as string) ?? ""
-          }
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("employeeName")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="w-[300px] ml-2"
         />

@@ -34,15 +34,15 @@ import Header from "@/components/header/header";
 import { DataTable } from "@/components/table/table";
 import Footer from "@/components/footer/footer";
 import { useQuery } from "react-query";
+import CustomSelectNew from "@/components/select/Newselect";
 
 const Dashboard = () => {
   const dispatch: any = useDispatch();
   const [openForm, setOpenForm] = useState(false);
   const [employeeList, setEmployeeList] = useState<any>([]);
+  const [filter, setFilter] = useState<any>("");
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState(false);
-  const { data }: any = useSelector((state: RootState) => state.employee);
-  const { data: User }: any = useSelector((state: RootState) => state.user);
 
   //VALIDATION SCHEMA
   const validationSchema = yup.object({
@@ -65,159 +65,119 @@ const Dashboard = () => {
     },
     validationSchema: validationSchema,
     //SUBMITTING THE FORM
-    onSubmit: async (values) => {
-      try {
-        let payload: any = {
-          ...values,
-          uniqueId:
-            Date.now().toString() + Math.random().toString(36).substring(2, 9),
-          userId: User?._id,
-        };
-        if (!type) {
-          dispatch(setEmployee(payload));
-        } else {
-          payload = {
-            ...values,
-            dateOfJoining: moment(values.dateOfJoining).format("DD-MM-YYYY"),
-          };
-          await employeeAPI.createEmployee(payload).then(async (res: any) => {
-            console.log(res, "responce");
-            if (res?.data) {
-              toast.success("Employee updated successfully");
-              getEmployeesById();
-            }
-          });
-        }
-        setOpenForm(false);
-      } catch (e) {
-        console.log(e);
-      }
-      formik.resetForm();
-    },
+    onSubmit: async (values) => {},
   });
 
   //LIST EMPLOYEES BASED ON USERID
-  const getEmployeesById = async () => {
-    setLoading(true);
-    try {
-      await employeeAPI.getEmployees(User?._id).then((res: any) => {
-        const uniqueVal: any = res?.data?.data.map(
-          (item: any) => item?.uniqueId
-        );
-        setEmployeeList(uniqueVal);
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const getEmployeesById = async () => {
+  //   setLoading(true);
+  //   try {
+  //     await employeeAPI.getEmployees(User?._id).then((res: any) => {
+  //       const uniqueVal: any = res?.data?.data.map(
+  //         (item: any) => item?.uniqueId
+  //       );
+  //       setEmployeeList(uniqueVal);
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const getEmployessByReactQuery = useQuery(
     ["getEmployessByReactQuery"],
     async () => {
-      return await employeeAPI.getEmployees(User?._id);
+      let payload: any = {
+        where: {},
+      };
+
+      return await employeeAPI.listAllTheUser(payload);
     },
     {
-      onSuccess: () => {},
+      onSuccess: (res) => {
+        setEmployeeList(res?.data);
+      },
       onError: (err: any) => {
         console.log(err.response?.data || err);
       },
     }
   );
 
-  console.log("getEmployessByReactQuery", getEmployessByReactQuery);
+  console.log("getEmployessByReactQuery", getEmployessByReactQuery?.data?.data);
 
-  //INITIAL LISTING
-  useEffect(() => {
-    if (data?.length !== 0) {
-      getEmployeesById();
+  const getUser = useQuery(
+    ["sajnsj"],
+    async () => {
+      return await employeeAPI.getUserTypeId();
+    },
+    {
+      onSuccess: (res) => {},
+      onError: (err: any) => {
+        console.log(err.response?.data || err);
+      },
     }
-  }, []);
+  );
 
   //TABLE DATA INITIALIZATION
   const EmployeeColumns: ColumnDef<EmployeeType>[] = [
     {
-      accessorKey: "employeeName",
-      header: "EmployeeName",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("employeeName")}</div>
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }: any) => (
+        <div className="capitalize">{row?.original?.name}</div>
       ),
     },
     {
       accessorKey: "designation",
       header: () => {
-        return <p>Designation</p>;
+        return <p>Email</p>;
       },
-      cell: ({ row }) => <div className="">{row.getValue("designation")}</div>,
+      cell: ({ row }: any) => <div className="">{row?.original?.email}</div>,
     },
     {
       accessorKey: "department",
-      header: () => <div className="text-left">Department</div>,
-      cell: ({ row }) => {
+      header: () => <div className="text-left">Phone Number</div>,
+      cell: ({ row }: any) => {
         return (
           <div className="text-left font-medium">
-            {row.getValue("department")}
+            {row?.original?.phoneNumber}
           </div>
+        );
+      },
+    },
+
+    {
+      accessorKey: "department",
+      header: () => <div className="text-left">Role</div>,
+      cell: ({ row }: any) => {
+        let newVar = getUser?.data?.data?.find(
+          (d: any) => row?.original?.userTypeId === d?._id
+        );
+
+        return (
+          <div className="text-left font-medium">{newVar?.type || "--"}</div>
         );
       },
     },
     {
       accessorKey: "dateOfJoining",
       header: () => <div className="text-left">Date of Joining</div>,
-      cell: ({ row }) => {
+      cell: ({ row }: any) => {
         return (
           <div className="text-left">
-            {new Date(row.getValue("dateOfJoining")).toLocaleDateString(
-              "en-US",
-              { month: "long", day: "numeric", year: "numeric" }
-            )}
+            {new Date(row?.original?.createdAt).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
           </div>
         );
       },
     },
-    {
-      accessorKey: "address",
-      header: () => <div className="text-left">Address</div>,
-      cell: ({ row }) => {
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div className="text-left truncate max-w-44">
-                  {row.getValue("address")}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className=" max-w-sm">{row.getValue("address")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      },
-    },
-    {
-      accessorKey: "actions",
-      header: () => <div className="text-left">Actions</div>,
-      cell: ({ row }: any) => {
-        return (
-          <Button
-            variant="default"
-            onClick={() => {
-              setOpenForm(true);
-              formik.setValues({
-                ...row.original,
-              });
-              setType(true);
-            }}
-            disabled={employeeList?.includes(row?.original?.uniqueId)}
-          >
-            Update
-          </Button>
-        );
-      },
-    },
   ];
+
+  console.log("dksndsnd", employeeList);
 
   //CLOSE MODEL FUNCTION
   const handleClose = () => {
@@ -230,133 +190,43 @@ const Dashboard = () => {
     <div className=" flex flex-col justify-between h-[100vh]">
       <Header />
       <div className="container overflow-scroll flex-grow no-scrollbar">
-        <div className="flex justify-between items-center">
+        <div className="flex mt-2 mb-5 gap-2">
           <p
             className="text-lg font-medium"
             style={{
               fontFamily: `Poppins`,
             }}
           >
-            LIST OF EMPLOYEES
+            LIST OF USERS
           </p>
-          <Dialog open={openForm}>
-            <DialogTrigger asChild>
-              <Button
-                onClick={() => {
-                  setOpenForm(true);
-                }}
-                className="mt-4 gap-3"
-                variant={"default"}
-              >
-                <PlusIcon />
-                Add Employee
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <form onSubmit={formik.handleSubmit}>
-                <div className="grid gap-4 py-4">
-                  <p className="text-lg font-bold text-center">
-                    {type ? "Update" : "Add"} Employee Detail's
-                  </p>
-                  <div className="items-center gap-4">
-                    <p className="text-sm font-semibold pb-1">Name</p>
-                    <Input
-                      id="employeeName"
-                      name="employeeName"
-                      placeholder="Enter employee name"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.employeeName}
-                    />
-                    {formik.touched.employeeName &&
-                    formik.errors.employeeName ? (
-                      <span className="text-red-500 text-sm">
-                        {formik.errors.employeeName}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="items-center gap-4">
-                    <p className="text-sm font-semibold pb-1">Designation</p>
-                    <Input
-                      id="designation"
-                      name="designation"
-                      placeholder="Enter designation"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.designation}
-                    />
-                    {formik.touched.designation && formik.errors.designation ? (
-                      <span className="text-red-500 text-sm">
-                        {formik.errors.designation}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="items-center gap-4">
-                    <p className="text-sm font-semibold pb-1">Department</p>
-                    <Input
-                      id="department"
-                      name="department"
-                      placeholder="Enter department"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.department}
-                    />
-                    {formik.touched.department && formik.errors.department ? (
-                      <span className="text-red-500 text-sm">
-                        {formik.errors.department}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="items-center gap-4">
-                    <p className="text-sm font-semibold pb-1">
-                      Date Of Joining
-                    </p>
-                    <DatePicker
-                      date={formik.values.dateOfJoining}
-                      setDate={(date: any) => {
-                        formik.setFieldValue("dateOfJoining", date);
-                      }}
-                    />
-                    {formik.touched.dateOfJoining &&
-                    formik.errors.dateOfJoining ? (
-                      <span className="text-red-500 text-sm">
-                        {formik.errors.dateOfJoining}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="items-center gap-4">
-                    <p className="text-sm font-semibold pb-1">Address</p>
-                    <Input
-                      id="address"
-                      name="address"
-                      placeholder="Enter address"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.address}
-                    />
-                    {formik.touched.address && formik.errors.address ? (
-                      <span className="text-red-500 text-sm">
-                        {formik.errors.address}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button onClick={() => handleClose()} variant="ghost">
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    {" "}
-                    {type ? "Update Employee" : "Create Employee"}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <div className="w-36">
+            <CustomSelectNew
+              placeholder={""}
+              options={getUser?.data?.data?.map((item: any) => {
+                return {
+                  label: item?.type,
+                  value: item?._id,
+                };
+              })}
+              styles={""}
+              customOnChange={(e: any) => {
+                setFilter(e);
+                let newArr = [...getEmployessByReactQuery?.data?.data];
+                let filterArr = newArr.filter((d) => d.userTypeId === e);
+                setEmployeeList(filterArr);
+                console.log("dksndjn", newArr);
+              }}
+            />
+          </div>
         </div>
+
         {!loading ? (
           <div>
-            <DataTable data={data} columns={EmployeeColumns} />
+            <DataTable
+              data={employeeList || []}
+              columns={EmployeeColumns}
+              setFilter={setFilter}
+            />
           </div>
         ) : (
           <div className="h-full w-full flex justify-center items-center">
