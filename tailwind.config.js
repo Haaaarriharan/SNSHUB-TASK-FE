@@ -2,10 +2,10 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -14,6 +14,11 @@ module.exports = {
       padding: "2rem",
       screens: {
         "2xl": "1400px",
+      },
+      extend: {
+        fontFamily: {
+          primary: ["Inter"],
+        },
       },
     },
     extend: {
@@ -66,12 +71,62 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "spinner_loader-line-animation": {
+          "0%": { backgroundPosition: "0 0" },
+          "100%": { backgroundPosition: "600px 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "spinner_loader-line-animation":
+          "spinner_loader-line-animation 1200ms infinite linear",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-}
+  plugins: [
+    require("tailwindcss-animate"),
+    function ({ addUtilities }) {
+      const newUtilities = {
+        ".scrollbar-thin": {
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgb(31 29 29) white",
+        },
+        ".scrollbar-webkit": {
+          "&::-webkit-scrollbar": {
+            width: "2px",
+            scrollbarWidth: "thin",
+            borderRadius: "10px",
+            height: "7px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "white",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "transparent",
+            borderRadius: "10px",
+            border: "1px solid white",
+          },
+        },
+
+        ".scrollbar-webkit:hover": {
+          "&::-webkit-scrollbar": {
+            width: "2px",
+            scrollbarWidth: "thin",
+            borderRadius: "10px",
+            height: "7px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "white",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgb(31 41 55)",
+            borderRadius: "10px",
+            border: "1px solid white",
+          },
+        },
+      };
+      addUtilities(newUtilities, ["responsive", "hover"]);
+    },
+  ],
+};

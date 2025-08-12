@@ -4,8 +4,8 @@ import { persistor, store } from "./redux/store";
 import AppRoute from "./routes/appRoute";
 import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
-import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { Toaster } from "sonner";
 
 function App() {
   const queryClient = new QueryClient({
@@ -22,7 +22,7 @@ function App() {
         <PersistGate loading={null} persistor={persistor}>
           <BrowserRouter>
             <AppRoute />
-            <Toaster />
+            <Toaster richColors position="top-right" />
           </BrowserRouter>
         </PersistGate>
       </Provider>

@@ -37,6 +37,7 @@ export default function SignUp() {
       .required("Phone number is required"),
     userTypeId: yup.string().required("Roles is required"),
     password: yup.string().required("Password is required"),
+    confirmpassword : yup.string().required("Confirm Password is required"),
   });
   const navigate = useNavigate();
 
@@ -173,7 +174,8 @@ export default function SignUp() {
               <Input
                 id="password"
                 name="password"
-                type="text"
+                required
+                type="password"
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -189,7 +191,7 @@ export default function SignUp() {
               <Input
                 id="confirmpassword"
                 name="confirmpassword"
-                type="text"
+                type="password"
                 value={formik.values.confirmpassword}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -202,9 +204,20 @@ export default function SignUp() {
               ) : null}
             </div>
           </CardContent>
-          <CardFooter>
-            <Button className="w-full" type="submit">
-              Login
+          <CardFooter className="flex flex-col">
+            <div className="flex justify-between py-1 w-full">
+              <div></div>
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate("/login");
+                }}
+              >
+                already have an account?
+              </div>
+            </div>
+            <Button className="w-full py-1" type="submit">
+              Sign Up
             </Button>
           </CardFooter>
         </form>

@@ -6,7 +6,7 @@ import storage from "redux-persist/lib/storage";
 
 // Define the root reducer
 const rootReducer = combineReducers({
-  employee: employeeReducer,
+  // employee: employeeReducer,
   user: userReducer,
 });
 

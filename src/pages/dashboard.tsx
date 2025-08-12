@@ -189,7 +189,7 @@ const Dashboard = () => {
   return (
     <div className=" flex flex-col justify-between h-[100vh]">
       <Header />
-      <div className="container overflow-scroll flex-grow no-scrollbar">
+      <div className="mx-10 overflow-scroll flex-grow no-scrollbar">
         <div className="flex mt-2 mb-5 gap-2">
           <p
             className="text-lg font-medium"
